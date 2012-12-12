@@ -56,23 +56,27 @@ text.label {
           
           $(el).html("");  
         
-        
-        
-        
 var margin = {top: 20, right: 220, bottom: 30, left: 50},
     width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
-
-
+        
+//append a new one
+svg = d3.select(el).append("svg")      
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");        
+        
+    
 var format = d3.time.format("%b %Y");
 
-var start = format.parse("Jan 1995");
-var end = format.parse("Oct 2012");
+var start = format.parse(data[1].Date[0]);
+var end = format.parse(data[1].Date[data[1].Date.length-1]);
 var range = d3.time.months(start,end);
 
 var x = d3.time.scale()
     .range([0,width])
-    .domain([start,end]);
+    .domain(d3.extent(data[1].Date, function(d) { return format.parse(d); }));
 
 var y = d3.scale.linear()
     .range([height, 0]);
@@ -95,13 +99,6 @@ var line = d3.svg.line()
     .x(function(d,i) { return x(range[i]); })
     .y(function(d) { return y(d); });
 
-//append a new one
-svg = d3.select(el).append("svg")      
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 //d3.csv("average-prices.csv", function(raw) {
   var newdata = [];
   //var goods = _(raw).pluck("Name");
@@ -111,7 +108,8 @@ svg = d3.select(el).append("svg")
       newdata.push({
           id: data[i].SeriesId[0],
           name: data[i].Name[0],
-          values: data[i].Values.map(function(d) {return parseFloat(d);})
+          dates: data[i].Date.map(function(d) {return format.parse(d);}),
+          values: data[i].Values.map(function(d) {return parseFloat(d) || null;})
       });
   }
         
