@@ -56,6 +56,14 @@ text.label {
           
           $(el).html("");  
         
+        
+        
+//nearly all the code can be attributed to http://bl.ocks.org/3891711
+        
+        
+        
+        
+        
 var margin = {top: 20, right: 220, bottom: 30, left: 50},
     width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;

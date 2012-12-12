@@ -35,9 +35,10 @@ shinyServer(function(input, output) {
         temp.df <- cbind(items[i],items.df[which(rownames(items.df)==substr(items[i],8,13)),1],
                          prices[which(prices[,1]==items[i]),c(6,4)],stringsAsFactors=FALSE)
         colnames(temp.df) <- c("SeriesId","Name","Date","Values")
-        temp.xts <- merge(dates.xts,as.xts(temp.df,order.by=temp.df[,"Date"]))[,c(2,3,5)]
+        temp.xts <- merge(dates.xts,as.xts(temp.df,order.by=temp.df[,"Date"]))[,c(2:5)]
         temp.xts[,"SeriesId"] = temp.df[1,"SeriesId"]
         temp.xts[,"Name"] = temp.df[1,"Name"]
+        temp.xts[,"Date"] = format(index(temp.xts),"%b %Y")
         data.list <- append(data.list,list(as.data.frame(temp.xts)))
       }
       
