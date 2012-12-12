@@ -66,8 +66,8 @@ var margin = {top: 20, right: 220, bottom: 30, left: 50},
 
 var format = d3.time.format("%b %Y");
 
-var start = format.parse("Jan 1984");
-var end = format.parse("Aug 2012");
+var start = format.parse("Jan 1995");
+var end = format.parse("Oct 2012");
 var range = d3.time.months(start,end);
 
 var x = d3.time.scale()
@@ -103,22 +103,28 @@ var line = d3.svg.line()
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("average-prices.csv", function(raw) {
-  var data = [];
-  var goods = _(raw).pluck("Name");
+//d3.csv("average-prices.csv", function(raw) {
+  var newdata = [];
+  //var goods = _(raw).pluck("Name");
+  var goods = data[0];
 
-  _(raw).each(function(series) {
-    var value = {};
-    data.push({
-      id: series["Series ID"],
-      name: series["Name"],
-      values: _(range).map(function(month) {
-                return parseFloat(series[format(month)]) || null;
-              })
-    });
+  newdata.push({
+      id: data[1].SeriesId[0],
+      name: data[1].Name[0],
+      values: data[1].Values
   });
+  //_(raw).each(function(series) {
+//    var value = {};
+//    data.push({
+//      id: series["Series ID"],
+//      name: series["Name"],
+//      values: _(range).map(function(month) {
+//                return parseFloat(series[format(month)]) || null;
+//              })
+//    });
+//  });
 
-  var values = _(data).chain().pluck('values').flatten().value();
+  var values = _(newdata).chain().pluck('values').flatten().value();
 
   y.domain([
     0,
@@ -143,7 +149,7 @@ d3.csv("average-prices.csv", function(raw) {
       .text("Average Price");
 
   var series = svg.selectAll(".series")
-      .data(data)
+      .data(newdata)
     .enter().append("g")
       .attr("class", "series");
 
@@ -156,7 +162,7 @@ d3.csv("average-prices.csv", function(raw) {
       .attr("class", "invisible hover")
       .attr("d", function(d) { return line(d.values); });
 
-  var labels = data.map(function(d) { return {name: d.name, y: y(d.values[d.values.length - 1])}});
+  var labels = newdata.map(function(d) { return {name: d.name, y: y(d.values[d.values.length - 1])}});
 
   series.append("text")
       .attr("class", "label hover")
@@ -209,7 +215,7 @@ d3.csv("average-prices.csv", function(raw) {
         d3.selectAll(".series text")
           .style("opacity", 1);
       });
-});
+//});
 
 
 

@@ -1,4 +1,5 @@
 require(RCurl)
+require(xts)
 
 
 shinyServer(function(input, output) {
@@ -25,12 +26,19 @@ shinyServer(function(input, output) {
       #items <- paste("APU0000",rownames(items.df)[1:10],sep="")
       prices <- prices.df[which(prices.df[,1] %in% items),]
       #add date column in format same as in d3 example
-      prices[,"date"] <- format(as.Date(paste(prices[,2],substr(prices[,3],2,3),"01",sep="-")),"%b %Y")
+      prices[,"date"] <- as.Date(paste(prices[,2],substr(prices[,3],2,3),"01",sep="-"))
+      
+      dates.xts <- as.xts(1:length(unique(prices[,"date"])),order.by=unique(prices[,"date"]))      
       
       data.list <- list(items.df[which(rownames(items.df) %in% substr(items,8,13)),1])
       for (i in 1:length(items)) {
-        data.list <- append(data.list,list(cbind(items.df[which(rownames(items.df)==substr(items[i],8,13)),1],
-                                          prices[which(prices[,1]==items[i]),c(6,4)])))
+        temp.df <- cbind(items[i],items.df[which(rownames(items.df)==substr(items[i],8,13)),1],
+                         prices[which(prices[,1]==items[i]),c(6,4)],stringsAsFactors=FALSE)
+        colnames(temp.df) <- c("SeriesId","Name","Date","Values")
+        temp.xts <- merge(dates.xts,as.xts(temp.df,order.by=temp.df[,"Date"]))[,c(2,3,5)]
+        temp.xts[,"SeriesId"] = temp.df[1,"SeriesId"]
+        temp.xts[,"Name"] = temp.df[1,"Name"]
+        data.list <- append(data.list,list(as.data.frame(temp.xts)))
       }
       
       
