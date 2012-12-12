@@ -95,9 +95,8 @@ var line = d3.svg.line()
     .x(function(d,i) { return x(range[i]); })
     .y(function(d) { return y(d); });
 
-          //append a new one
-          svg = d3.select(el).append("svg")
-              
+//append a new one
+svg = d3.select(el).append("svg")      
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -108,11 +107,14 @@ var line = d3.svg.line()
   //var goods = _(raw).pluck("Name");
   var goods = data[0];
 
-  newdata.push({
-      id: data[1].SeriesId[0],
-      name: data[1].Name[0],
-      values: data[1].Values
-  });
+  for(var i=1; i <= goods.length; i++) {
+      newdata.push({
+          id: data[i].SeriesId[0],
+          name: data[i].Name[0],
+          values: data[i].Values.map(function(d) {return parseFloat(d);})
+      });
+  }
+        
   //_(raw).each(function(series) {
 //    var value = {};
 //    data.push({
